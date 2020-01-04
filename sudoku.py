@@ -1,44 +1,18 @@
-import sys, re
-
-theSet = {1,2,3,4,5,6,7,8,9}
-
-board1 = [[2,1,0,3,8,5,4,6,9],
-          [3,8,5,4,6,9,7,1,2],
-          [4,9,6,7,2,1,8,0,5],
-          [5,0,4,8,1,6,9,7,3],
-          [6,3,9,5,4,7,2,8,1],
-          [8,7,1,2,0,3,5,4,6],
-          [7,6,2,1,5,8,0,9,4],
-          [9,5,0,6,7,4,1,2,8],
-          [1,4,8,9,3,2,6,5,0]]
-
-board2 = [[2,1,0,0,0,0,4,0,0],
-          [3,8,0,4,0,0,7,0,2],
-          [0,0,0,7,2,0,0,0,0],
-          [0,2,4,8,0,6,9,0,0],
-          [0,0,0,0,0,0,0,0,0],
-          [0,0,1,2,0,3,5,4,0],
-          [0,0,0,0,5,8,0,0,0],
-          [9,0,3,0,0,4,0,2,8],
-          [0,0,8,0,0,0,0,5,7]]
-
-board3 = [[0, 0, 0, 2, 6, 0, 7, 0, 1],
-          [6, 8, 0, 0, 7, 0, 0, 9, 0],
-          [1, 9, 0, 0, 0, 4, 5, 0, 0],
-          [8, 2, 0, 1, 0, 0, 0, 4, 0],
-          [0, 0, 4, 6, 0, 2, 9, 0, 0],
-          [0, 5, 0, 0, 0, 3, 0, 2, 8],
-          [0, 0, 9, 3, 0, 0, 0, 7, 4],
-          [0, 4, 0, 0, 5, 0, 0, 3, 6],
-          [7, 0, 3, 0, 1, 8, 0, 0, 0]]
-
 """
 Board Class, to hold game state and manipluations
 Takes in the GRID, which is a list of lists, [9,9]
 """
+theSet = {1,2,3,4,5,6,7,8,9}
 class Board:
     def __init__(self, grid):
+        #Grid holds our game state.
         self.grid = grid
+        #Originals holds the opriginal state, allowing for reset.
+        self.originals = grid
+        self.finished = False
+        '''
+        TO DO Fully implement helper mode flag, to enable next-move, and to allow/block illegal moves.
+        '''
 
     """
     Draws the board, so that we can see what we're doing
@@ -56,6 +30,15 @@ class Board:
         print()
 
     """
+    Basic getter functions
+    """
+    def getNum(self, x, y):
+        return self.grid[y][x]
+
+    def getOrig(self, x, y):
+        return self.originals[y][x]
+
+    """
     Basic Setter function
     """
     def setNum(self, x, y, n):
@@ -63,6 +46,14 @@ class Board:
             self.grid[y][x] = n
         else:
             print("Invalid Move")
+
+    """
+    Resets the board to original state
+    """
+    def resetGrid(self):
+        for c, i in enumerate(self.originals):
+            for d, j in enumerate(i):
+                self.grid[c][d] = j 
 
     """
     Basic Get functions for row and column. X and Y are reversed for the data structure used here.
@@ -94,7 +85,11 @@ class Board:
         return toReturn, tlxy
     
     def getPossibilities(self, x, y):
-        poss_vals = list((theSet - set(self.getSqr(x,y)[0])).intersection(theSet - set(self.getRow(y))).intersection(theSet - set(self.getCol(x))))
+        sqrPoss = theSet - set(self.getSqr(x,y)[0])
+        rowPoss = theSet - set(self.getRow(y))
+        colPoss = theSet - set(self.getCol(x))
+        poss_vals = list(sqrPoss.intersection(rowPoss).intersection(colPoss))
+        #poss_vals = list((theSet - set(self.getSqr(x,y)[0])).intersection(theSet - set(self.getRow(y))).intersection(theSet - set(self.getCol(x))))
         return poss_vals
 
     """
@@ -102,7 +97,8 @@ class Board:
     Using set subtraction, we whittle down from 1-9 to only numbers not present in row, column and s
     """
     def isValid(self, x, y, n):
-        if n in self.getPossibilities(x, y):
+        possibles = self.getPossibilities(x, y)
+        if n in possibles:
             return True
         return False
 
@@ -119,7 +115,6 @@ class Board:
                     self.setNum(x, y, self.getPossibilities(x, y)[0])
                     return True
         return False
-
 
     '''
     Helper Function for column and row possibility set generation
@@ -143,6 +138,11 @@ class Board:
                 toReturn.extend(self.getPossibilities(x, y))
         return set(toReturn)
 
+    '''
+    Inductive solver. This uses the possibilities present within all other squares in the row, col and sqr
+    around our input tile to check if this tile has a possibility no other has. In that case, that must be
+    what we input.
+    '''
     def findMulti(self, x, y):
         if self.grid[y][x] == 0:
             tilePossSet = set(self.getPossibilities(x, y))
@@ -161,34 +161,10 @@ class Board:
         else:
             print("The given tile is already filled")
         return False
-
-
-
-                    
-def main(theBoard=board1, debug=0):
-    testBoard = Board(theBoard)
-    testBoard.draw()
-    complete = False
-    moves = 0     
-    loops = 0
-    while not complete:
-        if loops > 81:
-            print("Board not completable")
-            break
-        if not any(0 in row for row in testBoard.grid):
-            complete = True
-            print("Board complete! This took {} moves".format(moves))
-        if testBoard.findSingle():
-            testBoard.draw()
-            moves+=1
-
-        for x in range(9):
-            for y in range(9):
-                if testBoard.grid[y][x] == 0:
-                    if testBoard.findMulti(x, y):
-                        testBoard.draw()
-                        moves += 1
-
-        loops += 1
-if __name__ == "__main__":
-    main()
+    
+    def isFinished(self):
+        if not any(0 in row for row in self.grid):
+            print("Board complete!")
+            self.finished = True
+            return True
+        return False
