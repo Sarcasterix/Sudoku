@@ -166,7 +166,6 @@ class Board:
 
                     
 def main(theBoard=board1, debug=0):
-    i = 0
     testBoard = Board(theBoard)
     testBoard.draw()
     complete = False
