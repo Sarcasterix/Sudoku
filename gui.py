@@ -54,7 +54,8 @@ class SudokuGui(Frame):
     
     def __initUI(self):
         """
-        Initialisation function for our UI, setting up the space we'll be working in.
+        Initialisation function for our UI, 
+        setting up the space we'll be working in.
         """
         #Set the name of the window
         self.parent.title("Sudoku")
@@ -117,7 +118,7 @@ class SudokuGui(Frame):
                     #Check if we've changed this number from base game-state
                     original = self.board.getOrig(col, row)
                     #Draw number black if original, blue/green otherwise
-                    color = "black" if tile == original else "sea green"
+                    color = "black" if tile == original else "green"
                     self.canvas.create_text(
                         x, y, text=tile, tags="numbers", fill=color
                     )
@@ -126,6 +127,7 @@ class SudokuGui(Frame):
         """
         Wipe all written answers from the board
         """
+        print("Clear Answers Clicked")
         self.board.resetGrid()
         self.canvas.delete("victory")
         self.drawGame()
@@ -204,7 +206,7 @@ class SudokuGui(Frame):
         #Draw text
         x = y = MARGIN + 4 * SIDE + SIDE / 2
         self.canvas.create_text(x, y,
-            text="You win!", tags="winner",
+            text="You win!", tags="victory",
             fill="white", font=("Arial", 32))
                     
 def main(theBoard=board1, debug=0):
