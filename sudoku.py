@@ -1,3 +1,4 @@
+import copy
 """
 Board Class, to hold game state and manipluations
 Takes in the GRID, which is a list of lists, [9,9]
@@ -6,9 +7,9 @@ theSet = {1,2,3,4,5,6,7,8,9}
 class Board:
     def __init__(self, grid):
         #Grid holds our game state.
-        self.grid = grid
-        #Originals holds the opriginal state, allowing for reset.
         self.originals = grid
+        #Originals holds the opriginal state, allowing for reset.
+        self.grid = copy.deepcopy(grid)
         self.finished = False
         '''
         TO DO Fully implement helper mode flag, to enable next-move, and to allow/block illegal moves.
@@ -51,9 +52,11 @@ class Board:
     Resets the board to original state
     """
     def resetGrid(self):
+        self.draw()
         for c, i in enumerate(self.originals):
             for d, j in enumerate(i):
                 self.grid[c][d] = j 
+        self.draw()
 
     """
     Basic Get functions for row and column. X and Y are reversed for the data structure used here.
