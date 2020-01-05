@@ -11,8 +11,9 @@ class Board:
         #Originals holds the opriginal state, allowing for reset.
         self.grid = copy.deepcopy(grid)
         self.finished = False
+        self.lastMove = []
         '''
-        TO DO Fully implement helper mode flag, to enable next-move, and to allow/block illegal moves.
+        TO DO Fully implement helper mode flag, to enable next-move, and to allow/block illegal lastMove.
         '''
 
     """
@@ -44,9 +45,16 @@ class Board:
     """
     def setNum(self, col, row, n):
         if self.isValid(col, row, n):
+            self.lastMove.append(((col, row), self.getNum(col, row)))
             self.grid[row][col] = n
         else:
             print("Invalid Move")
+
+    """
+    Set function to be exclusively used in undo-moves.
+    """
+    def undoNum(self, col, row, n):
+        self.grid[row][col] = n
 
     """
     Resets the board to original state
@@ -162,6 +170,7 @@ class Board:
                 self.setNum(col, row, value)
                 return True         
         return False
+
     
     def isFinished(self):
         if not any(0 in row for row in self.grid):

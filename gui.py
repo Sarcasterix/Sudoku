@@ -49,9 +49,12 @@ class SudokuGui(Frame):
                               text="Next Move",
                               #width=(WIDTH//2),
                               command=self.nextMove)
+        undoButton = Button(bottom,
+                              text="Undo",
+                              command=self.undoMove)
         clearButton.pack(in_=bottom, side=LEFT)
-        nextButton.pack(in_=bottom, side=RIGHT)
-
+        nextButton.pack(in_=bottom, side=LEFT)
+        undoButton.pack(in_=bottom, side=LEFT)
         #Call our draw_grid function
         self.drawGrid()
         #draw the puzzle on the grid
@@ -66,19 +69,24 @@ class SudokuGui(Frame):
         Draws 9x9 grid divided with blue lines into 3x3 squares
         """
         for i in range(10):
-            color = "blue" if i % 3 == 0 else "gray"
+            if i % 3 == 0:
+                color = "black"
+                lineWidth = 3
+            else:
+                color = "gray"
+                lineWidth = 2
             #Draw the vertical lines
             x0 = MARGIN + i * SIDE
             y0 = MARGIN
             x1 = MARGIN + i * SIDE
             y1 = HEIGHT - MARGIN
-            self.canvas.create_line(x0, y0, x1, y1, fill=color)
+            self.canvas.create_line(x0, y0, x1, y1, width = lineWidth, fill=color)
             #Draw the horizontal lines
             x0 = MARGIN
             y0 = MARGIN + i * SIDE
             x1 = WIDTH - MARGIN
             y1 = MARGIN + i * SIDE
-            self.canvas.create_line(x0, y0, x1, y1, fill=color)
+            self.canvas.create_line(x0, y0, x1, y1, width = lineWidth, fill=color)
 
     def drawGame(self):
         """
@@ -209,6 +217,16 @@ class SudokuGui(Frame):
 
         if self.board.isFinished():
                 self.drawWin()
+
+    def undoMove(self):
+        #(((col, row), (self.getNum(col, row), n)))
+        if len(self.board.lastMove) >= 1:
+            print(self.board.lastMove)
+            ((col, row), old) = self.board.lastMove.pop(-1)
+            print(col, row, old)
+            print(self.board.lastMove)
+            self.board.undoNum(col, row, old)
+            self.drawGame()
                     
 def main():
     """
