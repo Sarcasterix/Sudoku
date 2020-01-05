@@ -1,4 +1,4 @@
-from tkinter import Tk, Canvas, Frame, Button, BOTH, TOP, BOTTOM, filedialog
+from tkinter import Tk, Canvas, Frame, Button, BOTH, TOP, BOTTOM, LEFT, RIGHT, filedialog
 import sys, re
 from sudoku import Board
 from readgame import ReadGame
@@ -31,16 +31,26 @@ class SudokuGui(Frame):
         #Set the name of the window
         self.parent.title("Sudoku")
         self.pack(fill=BOTH, expand=1)
+        top = Frame(self)
+        bottom = Frame(self)
+        top.pack(side=TOP)
+        bottom.pack(side=BOTTOM)#, fill=BOTH, expand=True)
         #Build a canvas to draw on
         self.canvas = Canvas(self,
                              width=WIDTH,
                              height=HEIGHT)
-        self.canvas.pack(fill=BOTH, side=TOP)
+        self.canvas.pack(in_=top, fill=BOTH, side=TOP)
         #Add a button at the base of the screen to reset the game
-        clear_button = Button(self,
+        clearButton = Button(bottom,
                               text="Clear answers",
+                              #width=WIDTH//2,
                               command=self.clearBoard)
-        clear_button.pack(fill=BOTH, side=BOTTOM)
+        nextButton = Button(bottom,
+                              text="Next Move",
+                              #width=(WIDTH//2),
+                              command=self.nextMove)
+        clearButton.pack(in_=bottom, side=LEFT)
+        nextButton.pack(in_=bottom, side=RIGHT)
 
         #Call our draw_grid function
         self.drawGrid()
@@ -160,9 +170,9 @@ class SudokuGui(Frame):
             self.outlineCell()
             #If this was the winning move, draw our completion image
             if self.board.isFinished():
-                self.__draw_victory()
+                self.drawWin()
 
-    def __draw_victory(self):
+    def drawWin(self):
         """
         Draw the victory condition
         """
@@ -179,6 +189,26 @@ class SudokuGui(Frame):
         self.canvas.create_text(x, y,
             text="You win!", tags="victory",
             fill="white", font=("Arial", 32))
+
+    """
+    Next move button, fills in the next tile which has only one possible number
+    """
+    def nextMove(self):
+        #Running findSingle updates board, otherwise returns false
+        if not self.board.findSingle():
+            #Iterate over board
+            for row in range(9):
+                for col in range(9):
+                    #findMulti also updates game state, we can break on return
+                    if self.board.findMulti(col, row):
+                        break
+                else:
+                    continue # Safeguard to break nested for loop
+                break
+        self.drawGame()
+
+        if self.board.isFinished():
+                self.drawWin()
                     
 def main():
     """

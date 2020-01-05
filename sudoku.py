@@ -161,8 +161,6 @@ class Board:
                 print("By induction, the only value possible at {}, {} is {}".format(col, row, value))
                 self.setNum(col, row, value)
                 return True         
-        else:
-            print("The given tile is already filled")
         return False
     
     def isFinished(self):
