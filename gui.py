@@ -1,36 +1,7 @@
-from tkinter import Tk, Canvas, Frame, Button, BOTH, TOP, BOTTOM
+from tkinter import Tk, Canvas, Frame, Button, BOTH, TOP, BOTTOM, filedialog
 import sys, re
 from sudoku import Board
-
-board1 = [[2,1,0,3,8,5,4,6,9],
-          [3,8,5,4,6,9,7,1,2],
-          [4,9,6,7,2,1,8,0,5],
-          [5,0,4,8,1,6,9,7,3],
-          [6,3,9,5,4,7,2,8,1],
-          [8,7,1,2,0,3,5,4,6],
-          [7,6,2,1,5,8,0,9,4],
-          [9,5,0,6,7,4,1,2,8],
-          [1,4,8,9,3,2,6,5,0]]
-
-board2 = [[2,1,0,0,0,0,4,0,0],
-          [3,8,0,4,0,0,7,0,2],
-          [0,0,0,7,2,0,0,0,0],
-          [0,2,4,8,0,6,9,0,0],
-          [0,0,0,0,0,0,0,0,0],
-          [0,0,1,2,0,3,5,4,0],
-          [0,0,0,0,5,8,0,0,0],
-          [9,0,3,0,0,4,0,2,8],
-          [0,0,8,0,0,0,0,5,7]]
-
-board3 = [[0, 0, 0, 2, 6, 0, 7, 0, 1],
-          [6, 8, 0, 0, 7, 0, 0, 9, 0],
-          [1, 9, 0, 0, 0, 4, 5, 0, 0],
-          [8, 2, 0, 1, 0, 0, 0, 4, 0],
-          [0, 0, 4, 6, 0, 2, 9, 0, 0],
-          [0, 5, 0, 0, 0, 3, 0, 2, 8],
-          [0, 0, 9, 3, 0, 0, 0, 7, 4],
-          [0, 4, 0, 0, 5, 0, 0, 3, 6],
-          [7, 0, 3, 0, 1, 8, 0, 0, 0]]
+from readgame import ReadGame
 
 MARGIN = 20  # Pixels around the board
 SIDE = 50  # Width of every board cell.
@@ -209,23 +180,23 @@ class SudokuGui(Frame):
             text="You win!", tags="victory",
             fill="white", font=("Arial", 32))
                     
-def main(theBoard=board1, debug=0):
+def main():
     """
     Main loop, to run the game.
     """
     #Build our gamestate from loaded variable
-    testBoard = Board(theBoard)
-    testBoard.draw()
+
 
     #Start tkinter
     root = Tk()
-
+    root.filename = filedialog.askopenfilename(initialdir = "./gameFiles",title = "Select file",filetypes = (("Sudoku Files","*.sud"),("all files","*.*")))
+    theGame = Board(ReadGame(root.filename).board)
+    theGame.draw()
     #Set our GUI up
-    SudokuGui(root, testBoard)
+    SudokuGui(root, theGame)
     root.geometry("%dx%d" % (WIDTH, HEIGHT + 40))
     #Lets
     root.mainloop()
-
 
 if __name__ == "__main__":
     main()
