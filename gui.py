@@ -70,23 +70,39 @@ class SudokuGui(Frame):
         """
         for i in range(10):
             if i % 3 == 0:
-                color = "black"
+                colour = "black"
                 lineWidth = 3
+                x0 = MARGIN  + i * SIDE
+                x1 = MARGIN + i * SIDE
             else:
-                color = "gray"
+                colour = "gray"
                 lineWidth = 2
+                x0 = MARGIN + i * SIDE                
+                x1 = MARGIN + i * SIDE
             #Draw the vertical lines
-            x0 = MARGIN + i * SIDE
             y0 = MARGIN
-            x1 = MARGIN + i * SIDE
             y1 = HEIGHT - MARGIN
-            self.canvas.create_line(x0, y0, x1, y1, width = lineWidth, fill=color)
+            self.canvas.create_line(x0, y0, x1, y1, width = lineWidth, fill=colour)
             #Draw the horizontal lines
             x0 = MARGIN
             y0 = MARGIN + i * SIDE
             x1 = WIDTH - MARGIN
             y1 = MARGIN + i * SIDE
-            self.canvas.create_line(x0, y0, x1, y1, width = lineWidth, fill=color)
+            self.canvas.create_line(x0, y0, x1, y1, width = lineWidth, fill=colour)
+        for i in range(0, 10, 3):
+            colour = "black"
+            lineWidth = 3
+            x0 = MARGIN  + i * SIDE
+            y0 = MARGIN -1
+            x1 = MARGIN + i * SIDE
+            y1 = HEIGHT - MARGIN +2
+            self.canvas.create_line(x0, y0, x1, y1, width = lineWidth, fill=colour)
+            #Draw the horizontal lines
+            x0 = MARGIN
+            y0 = MARGIN + i * SIDE
+            x1 = WIDTH - MARGIN
+            y1 = MARGIN + i * SIDE
+            self.canvas.create_line(x0, y0, x1, y1, width = lineWidth, fill=colour)
 
     def drawGame(self):
         """
@@ -107,9 +123,9 @@ class SudokuGui(Frame):
                     #Check if we've changed this number from base game-state
                     original = self.board.getOrig(col, row)
                     #Draw number black if original, blue/green otherwise
-                    color = "black" if tile == original else "green"
+                    colour = "black" if tile == original else "green"
                     self.canvas.create_text(
-                        x, y, text=tile, tags="numbers", fill=color
+                        x, y, text=tile, tags="numbers", fill=colour
                     )
 
     def clearBoard(self):
