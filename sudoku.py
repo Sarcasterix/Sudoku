@@ -70,13 +70,15 @@ class Board:
     Basic Get functions for row and column. X and Y are reversed for the data structure used here.
     """
     def getRow(self, row):
-        return self.grid[row]
+        return self.grid[row]#, [(col, row) for col in range(9)]
 
     def getCol(self, col):
         toReturn = []
+        #coords = []
         for row in range(9):
             toReturn.append(self.grid[row][col])
-        return toReturn    
+            #coords.append((col, row))
+        return toReturn#, coords
 
     """
     Returns the 3x3 subsquare, alongside the top-left co-ordinates of that square
@@ -89,16 +91,16 @@ class Board:
             if row in pos:
                 rows = pos
         toReturn = []
-        sqrCoords = [(col, row) for col in cols for row in rows]
+        coords = [(col, row) for col in cols for row in rows]
         for col in cols:
             for row in rows:
                 toReturn.append(self.grid[row][col])
-        return toReturn, sqrCoords
+        return toReturn, coords
     
     def getPossibilities(self, col, row):
         sqrPoss = theSet - set(self.getSqr(col,row)[0])
-        rowPoss = theSet - set(self.getRow(row))
-        colPoss = theSet - set(self.getCol(col))
+        rowPoss = theSet - set(self.getRow(row))#[0])
+        colPoss = theSet - set(self.getCol(col))#[0])
         poss_vals = list(sqrPoss.intersection(rowPoss).intersection(colPoss))
         #poss_vals = list((theSet - set(self.getSqr(x,y)[0])).intersection(theSet - set(self.getRow(y))).intersection(theSet - set(self.getCol(x))))
         return poss_vals
@@ -120,25 +122,38 @@ class Board:
         for row in range(9):
             for col in range(9):
                 if (self.grid[row][col]) == 0 and len(self.getPossibilities(col, row)) == 1:
-                    if col == 4 and row == 1:
-                        pass
                     print("The only possible number at position {}, {} is {}".format(col, row, self.getPossibilities(col, row)[0]))
                     self.setNum(col, row, self.getPossibilities(col, row)[0])
                     return True
         return False
 
     '''
-    Helper Function for column and row possibility set generation
+    Helper Function for column possibility set generation
+    Row is the index of the row we are looking at,
+    x is the column of the square we are checking from.
     '''
-    def findColRow(self, xy, toCheck):
+    def findCol(self, x, row):
         toReturn = []
-        for c, i in enumerate(toCheck):
-            if c == xy:
+        for i in range(9):
+            if i == row:
                 continue
-            if i == 0:
-                toReturn.extend(self.getPossibilities(xy, c))
+            if self.getNum(x, i) == 0:
+                toReturn.extend(self.getPossibilities(x, i))
         return set(toReturn)
-
+    '''
+    Helper Function for row possibility set generation
+    Col is the index of the column we are looking at,
+    y is the row of the square we are checking from.
+    '''
+    def findRow(self, col, y):
+        toReturn = []
+        for i in range(9):
+            if i == col:
+                continue
+            if self.getNum(i, y) == 0:
+                toReturn.extend(self.getPossibilities(i, y))
+        return set(toReturn)
+        
     '''
     Helper Function for square possibility set generation
     '''
@@ -155,20 +170,29 @@ class Board:
     what we input.
     '''
     def findMulti(self, col, row):
-        if self.grid[row][col] == 0:
+        if self.getNum(col, row) == 0:
             tilePossSet = set(self.getPossibilities(col, row))
 
-            rowPoss = self.findColRow(col, self.getRow(row))
-            colPoss = self.findColRow(row, self.getCol(col))
+            rowPoss = self.findRow(col, row)
+            colPoss = self.findCol(col, row)
             sqrCoords = self.getSqr(col, row)[1]
             sqrCoords.remove((col, row))
             sqrPoss = self.findSqr(sqrCoords)
+            if col == 2 and row == 0:
+                print()
+
             tilePoss = tilePossSet - rowPoss - colPoss - sqrPoss
-            if len(tilePoss) == 1:
-                value = tilePoss.pop()
+            possibilities = []
+            for l in [rowPoss, colPoss, sqrPoss]:
+                if len(tilePossSet-l) == 1:
+                    possibilities.append((tilePossSet-l).pop())
+            if len(set(possibilities)) == 1:
+                value = possibilities.pop()
                 print("By induction, the only value possible at {}, {} is {}".format(col, row, value))
                 self.setNum(col, row, value)
-                return True         
+                return True   
+            #if len(tilePoss) == 1:
+      
         return False
 
     
