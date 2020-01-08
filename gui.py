@@ -52,9 +52,13 @@ class SudokuGui(Frame):
         undoButton = Button(bottom,
                               text="Undo",
                               command=self.undoMove)
+        finishButton = Button(bottom,
+                                text="Finish Game",
+                                command=self.finishGame)
         clearButton.pack(in_=bottom, side=LEFT)
         nextButton.pack(in_=bottom, side=LEFT)
         undoButton.pack(in_=bottom, side=LEFT)
+        finishButton.pack(in_=bottom, side=LEFT)
         #Call our draw_grid function
         self.drawGrid()
         #draw the puzzle on the grid
@@ -234,8 +238,12 @@ class SudokuGui(Frame):
         if self.board.isFinished():
                 self.drawWin()
 
+    def finishGame(self):
+        while(not self.board.isFinished()):
+            self.nextMove()
+        self.drawWin
+
     def undoMove(self):
-        #(((col, row), (self.getNum(col, row), n)))
         if len(self.board.lastMove) >= 1:
             print(self.board.lastMove)
             ((col, row), old) = self.board.lastMove.pop(-1)
