@@ -178,10 +178,6 @@ class Board:
             sqrCoords = self.getSqr(col, row)[1]
             sqrCoords.remove((col, row))
             sqrPoss = self.findSqr(sqrCoords)
-            if col == 2 and row == 0:
-                print()
-
-            tilePoss = tilePossSet - rowPoss - colPoss - sqrPoss
             possibilities = []
             for l in [rowPoss, colPoss, sqrPoss]:
                 if len(tilePossSet-l) == 1:
