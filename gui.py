@@ -247,6 +247,7 @@ class SudokuGui(Frame):
         if len(self.board.lastMove) >= 1:
             ((col, row), old) = self.board.lastMove.pop(-1)
             self.board.undoNum(col, row, old)
+            self.drawGame()
             if not self.board.isFinished():
                 self.canvas.delete("victory")
                     
