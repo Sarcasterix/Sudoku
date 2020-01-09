@@ -136,9 +136,9 @@ class SudokuGui(Frame):
         """
         Wipe all written answers from the board
         """
-        print("Clear Answers Clicked")
         self.board.resetGrid()
         self.canvas.delete("victory")
+        self.board.isFinished()
         self.drawGame()
 
     def onCellClick(self, event):
@@ -245,12 +245,10 @@ class SudokuGui(Frame):
 
     def undoMove(self):
         if len(self.board.lastMove) >= 1:
-            print(self.board.lastMove)
             ((col, row), old) = self.board.lastMove.pop(-1)
-            print(col, row, old)
-            print(self.board.lastMove)
             self.board.undoNum(col, row, old)
-            self.drawGame()
+            if not self.board.isFinished():
+                self.canvas.delete("victory")
                     
 def main():
     """

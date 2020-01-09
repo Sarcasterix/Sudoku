@@ -60,11 +60,9 @@ class Board:
     Resets the board to original state
     """
     def resetGrid(self):
-        self.draw()
         for c, i in enumerate(self.originals):
             for d, j in enumerate(i):
                 self.grid[c][d] = j 
-        self.draw()
 
     """
     Basic Get functions for row and column. X and Y are reversed for the data structure used here.
@@ -122,7 +120,7 @@ class Board:
         for row in range(9):
             for col in range(9):
                 if (self.grid[row][col]) == 0 and len(self.getPossibilities(col, row)) == 1:
-                    print("The only possible number at position {}, {} is {}".format(col, row, self.getPossibilities(col, row)[0]))
+                    #print("The only possible number at position {}, {} is {}".format(col, row, self.getPossibilities(col, row)[0]))
                     self.setNum(col, row, self.getPossibilities(col, row)[0])
                     return True
         return False
@@ -184,7 +182,7 @@ class Board:
                     possibilities.append((tilePossSet-l).pop())
             if len(set(possibilities)) == 1:
                 value = possibilities.pop()
-                print("By induction, the only value possible at {}, {} is {}".format(col, row, value))
+                #print("By induction, the only value possible at {}, {} is {}".format(col, row, value))
                 self.setNum(col, row, value)
                 return True   
             #if len(tilePoss) == 1:
@@ -194,7 +192,7 @@ class Board:
     
     def isFinished(self):
         if not any(0 in row for row in self.grid):
-            print("Board complete!")
             self.finished = True
             return True
+        self.finished = False
         return False
